@@ -5,7 +5,7 @@
 
 set -e  # Exit on any error
 
-echo "🧠 Setting up Local RAG Web App..."
+echo "🚀 Setting up Local RAG with Multimodal Capabilities..."
 echo "=================================="
 
 # Colors for output
@@ -96,6 +96,7 @@ fi
 # Create necessary directories
 print_status "Creating project directories..."
 mkdir -p docs chroma
+mkdir -p extracted_images
 print_success "Project directories created"
 
 # Check if Ollama is running
@@ -118,6 +119,61 @@ else
     ollama pull mistral
     print_success "Mistral model downloaded"
 fi
+
+# Set up environment variables
+print_status "Setting up environment variables..."
+export TOKENIZERS_PARALLELISM=false
+
+# Check multimodal capabilities
+print_status "Checking multimodal capabilities..."
+python3 -c "
+try:
+    import transformers
+    import torch
+    import PIL
+    import cv2
+    print('✅ Multimodal capabilities available')
+except ImportError as e:
+    print(f'⚠️ Multimodal capabilities not fully available: {e}')
+    print('   Some image analysis features may not work')
+"
+
+# Test basic functionality
+print_status "Testing basic functionality..."
+python3 -c "
+try:
+    import streamlit
+    import langchain
+    import chromadb
+    import fastembed
+    print('✅ Core dependencies working')
+except ImportError as e:
+    print(f'❌ Core dependency issue: {e}')
+    exit(1)
+"
+
+echo ""
+echo "🎉 Setup complete!"
+echo ""
+echo "📋 Next steps:"
+echo "1. Start Ollama: ollama serve"
+echo "2. Pull a model: ollama pull mistral"
+echo "3. Run the app: streamlit run main.py"
+echo ""
+echo "🔧 Optional: Install additional models"
+echo "   ollama pull llama2"
+echo "   ollama pull deepseek-coder"
+echo "   ollama pull nomic-embed-text"
+echo ""
+echo "🖼️ Multimodal features:"
+echo "   - Image extraction from PDFs"
+echo "   - Image captioning and classification"
+echo "   - Visual content analysis"
+echo ""
+echo "📚 Usage:"
+echo "   - Upload PDF, Markdown, or text files"
+echo "   - Enable multimodal processing for image analysis"
+echo "   - Chat with your documents using local AI"
 
 # Create a simple test script
 print_status "Creating test script..."
